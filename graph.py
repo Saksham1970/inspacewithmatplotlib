@@ -1,3 +1,4 @@
+from tkinter import image_names
 import matplotlib.pyplot as plt
 import numpy as np
 import networkx as nx
@@ -7,14 +8,19 @@ import math
 import matplotlib.patches as patches
 from scipy.interpolate import make_interp_spline
 from scipy.interpolate import interp1d
-        
+from PIL import Image
+from PIL import ImageDraw 
+from PIL import ImageFont
 #? Parameters definitions
+
+# Image Name
+image_name = "myimage.png"
 
 # Node Images Length and Width
 node_length = 0.4
 node_width = 0.24
 
-figure_size = (96,54)
+figure_size = (96,60)
 
 min_dist_bw_two_nodes = 0.12
 node_clearance = 2
@@ -35,30 +41,30 @@ color_palette = {
     "background" : "#121212",
     "title": "#F24A72",
     "video_title": "#99AAB5",
-    "video_code": "#FFFFFF",
+    "video_id": "#FFFFFF",
     "start": "#00897B",
     "end": "#303F9F"
 }
 
 title = {
     "title" : "In Space with Markiplier\nAll routes",
-    "fontweight": 1000,
-    "fontsize": 138,
-    "alignment": "center",
-    "top": 0.8,
-    "left": 0.8
+    "font_file": "./Roboto/Roboto-Medium.ttf",
+    "fontsize": 5,
+    "alignment": "mm",
+    "top": 80,
+    "left": 80
 }
 
 video_title = {
-    "fontweight": 500,
-    "fontsize": 24,
-    "alignment": "center"
+    "font_file": "./Roboto/Roboto-Light.ttf",
+    "fontsize": 1,
+    "alignment": "mm"
 }
 
 video_id = {
-    "fontweight": 500,
-    "fontsize": 24,
-    "alignment": "center"
+    "font_file": "./Roboto/Roboto-Regular.ttf",
+    "fontsize": 1,
+    "alignment": "mm"
 }
 
 def magnitude(vector):
@@ -142,6 +148,7 @@ for node in nodes:
     if isChild and not isParent:
         ends += [node]
 
+# pos = {'j64oZLF443g': array([ 0.77145403, -0.57300887]), 'raIqPgW-quI': array([ 0.58869513, -0.62627967]), 'NK-u4ukbOFw': array([ 0.55949213, -0.39263847]), 'bYy_aAiTfYA': array([ 0.39484783, -0.4061523 ]), '7P9mpmsLSno': array([ 0.38824976, -0.21558735]), 'HcfjRwNr89Q': array([ 0.29763054, -0.11518634]), 'wKNzPHIk0EY': array([ 0.25556924, -0.00173218]), 'bjxEL2A9F4Q': array([0.27826083, 0.15238432]), 'Qbr2cyEgWS4': array([0.17245385, 0.09368269]), 'uoyvZ5mXiio': array([ 0.13649191, -0.02206534]), 'diaW8rX9CZg': array([0.04196613, 0.09007032]), 'YBDAQclN9jQ': array([-0.0762334 ,  0.00387218]), 'QgImksN6b3M': array([-0.17384706,  0.07568849]), '3De90tdLJmk': array([-0.27054469,  0.1983401 ]), 'NW-UYcqwDpU': array([-0.28859352,  0.35275463]), '3TboquFEMFA': array([-0.28928587,  0.50454579]), 'qeu7M8wIpyc': array([-0.21168085,  0.65768728]), '4zQJNqRjadQ': array([-0.41528548,  0.59454436]), 'fGewtUPe7TI': array([-0.5252656 ,  0.64424086]), 'PteUZUCJ7iY': array([-0.61456039,  0.56258646]), 'jGGT5FHDhFI': array([-0.14239939,  0.47054179]), 'iMz8rZD_9hg': array([-0.38860373,  0.22109669]), 'szDl_uKbOJg': array([-0.53962391,  0.28257017]), 'DsZDtqK4f1A': array([-0.70572164,  0.22786684]), '-Yn4Z-mPKMM': array([-0.81606642,  0.33509153]), 'MJM6QneZbVA': array([-0.85247263,  0.15054857]), '6cARNW6O4sY': array([-1.        ,  0.20932886]), 'g_ILOR7_mHw': array([-0.96122527,  0.03927965]), 'VpyFw2-Cec4': array([-0.57672844,  0.44764275]), 'cjGsjagqkk4': array([-0.49610577,  0.11736911]), 'aM-uQMUO6i4': array([-0.30388752, -0.03304188]), '17r42pf7kwY': array([-0.31538735,  0.0866643 ]), 'FuQt2BhgCQo': array([-0.28264221, -0.16667636]), '7iJoWgYwL7g': array([-0.41607504, -0.25465717]), 'eoOePnBbGWY': array([-0.31496724, -0.3211268 ]), 'wfdMicitgnA': array([-0.18444573, -0.04906642]), 'g72tvDIu_Ys': array([-0.03420424,  0.23712974]), 'uj8TRJDz98E': array([-0.15513156,  0.23293655]), '3cE9v0tdEGY': array([-0.16851026,  0.35239263]), 'CXUKjHzoMl4': array([ 0.00809349, -0.08262302]), 'Y0Ja_BrgGhA': array([ 0.31754867, -0.31360683]), 'uIMvjur42Vw': array([ 0.46990624, -0.31124585]), 'Dq1BrxAXQLg': array([ 0.4288049 , -0.52193415]), 'Tn1MkhNUaA4': array([ 0.28205289, -0.44886243]), 'ch07UcMzWkQ': array([ 0.2080399 , -0.26368293]), 'Rm7nK2x_FWQ': array([ 0.54933512, -0.51276321]), 'mGtFUm-sgh4': array([ 0.79431579, -0.40962204]), 'HHlphhgN1kU': array([ 0.71275559, -0.25188983]), 'ogrmyhb5gNI': array([ 0.62259631, -0.10849318]), 'SKODGzV20LU': array([ 0.47182291, -0.12898521]), '98bVPHiSY_k': array([0.58359109, 0.02657308]), 'uQO4CLQhKuY': array([ 0.3982033 , -0.03306016]), '5nZZAmvRIuU': array([0.43911858, 0.07995245]), '8Figj37SoPg': array([ 0.67890599, -0.37522468]), '5eG8rFt_JuY': array([ 0.66929308, -0.50816952])}
 
 # Create pos charts (nodes with their coordinates on the axes) using library algorithms
 # Replace with spring_layout, spectre_layout etc for other positions
@@ -224,6 +231,7 @@ while True:
 # Create Figure on the Plot
 fig, ax = plt.subplots(figsize = figure_size)
 
+
 """
 normal coordinates = user defined whatever the data has the value of x and y, can be from like (-10 to 100), (-555 to -123) 
 display coordinates = pixel coordinates on display, will be from (0 to width), (0 to height)
@@ -236,6 +244,7 @@ display_axis = ax.transData.transform
 
 # Converst the data from display coordinates to figure coordinates
 figure_coordinates = fig.transFigure.inverted().transform
+
 
 # Disable the axes visibility
 ax.spines['top'].set_visible(False)
@@ -250,9 +259,6 @@ ax.set_facecolor(color_palette["background"])
 
 # Remove space between axes and figure
 plt.tight_layout(pad=0)
-
-# Add title to the graph
-ax.text(title["left"],title["top"],title["title"], transform = fig.transFigure,fontweight = title["fontweight"],fontsize = title["fontsize"], ha = title["alignment"],color = color_palette["title"])
 
 
 # Draw the start and end cards
@@ -308,7 +314,6 @@ the variable used : min_edge_dist_from_node to know the distance the curve shoul
 pseudo_edges = {}       # The list with the broken down lines 
 for m,n in edges:       # Edge has two end points m and n
     ind =[{i,j} for i,j in list(G.edges.keys())].index({m,n}) # index of (m,n) in edge_colors
-    
     x = [pos[m][0],pos[n][0]]     # list of x coordinates
     y = [pos[m][1],pos[n][1]]     # list of y coordinates
     x2 = x[:]
@@ -330,7 +335,7 @@ for m,n in edges:       # Edge has two end points m and n
         a = np.dot(unit_vector(l-j), unit_vector(k-j))  # cos angle  ljk
         b = np.dot(unit_vector(l-k), unit_vector(j-k))  # cos angle  lkj
 
-        if np.isnan(a) or np.isnan(b):                                  # if l lies on line jk
+        if a*b == 1:                                  # if l lies on line jk
             if magnitude(l-k) + magnitude(l-j) == magnitude(k-j):       # if l lies on line segment jk
                 t = l + unit_perpendicular(k-j)*min_dist_bw_two_nodes*min_edge_dist_from_node       # t is the point on the curve
                 t2 = l                                                                              # t2 is t projection on jk
@@ -372,11 +377,12 @@ for m,n in edges:       # Edge has two end points m and n
 
     x4 = []
     y4 = []
-    for ind, _x in enumerate(x3):
+    for z, _x in enumerate(x3):
         x4.append(x[x2.index(_x)])
-        y4.append(y[y2.index(y3[ind])])
+        y4.append(y[y2.index(y3[z])])
     
     x,y = np.array(x4),np.array(y4)
+    
 
     # Cheat code. Just added some degree of color assuming it will intesect new lines once its curved. 
     # Cant be bothered to recheck the intesections with curve lines.
@@ -405,6 +411,7 @@ for m,n in edges:       # Edge has two end points m and n
     y[i] = n[1]
 
     k = len(y)
+   
 
     # Curve line method 1 (spline)
     if is_sorted(x):
@@ -454,27 +461,90 @@ for n in G.nodes:
     def patcher(l, n):
         return "\n".join((" ".join(l[i:i+n]) for i in range(0, len(l), n)))
     s = patcher(s,3)
-
-    # Add text
-    a.text(a.get_xlim()[1]/2,
-        a.get_ylim()[0]*(1 + 20*( video_title["fontsize"]/a.get_ylim()[0])*(1 + s.count("\n"))),
-        s,
-        fontsize = video_title["fontsize"],
-        ha = video_title["alignment"],
-        color = color_palette["video_title"],
-        fontweight = video_title["fontweight"])
-
-    a.text(a.get_xlim()[1]/2,
-        a.get_ylim()[0]*(-10* video_title["fontsize"]/a.get_ylim()[0]),
-        n,
-        fontsize = video_id["fontsize"],
-        color = color_palette["video_code"],
-        ha = video_id["alignment"],
-        fontweight = video_id["fontweight"])
     
     # Hide the mini axes
     a.axis("off")
-    
-# plt.gcf().set_dpi(25)
-# plt.show()
-plt.savefig('myimage.png')
+
+plt.savefig(image_name)
+
+# plt.gcf().set_dpi(100) 
+# plt.show(block=False)
+
+
+"""
+Post-Processing
+
+Coz of the weird pixel measurments in matplotlib, using PIL to add text later.
+
+"""
+
+def display_coordinates(x):
+    """ Returns pixel coordinates from data coordinates. """
+    return fig.transFigure.transform(figure_coordinates(display_axis(x)))
+
+# Gets canvas size
+display_lim = fig.transFigure.transform((1,1))
+
+# Converts a data length to pixels
+def in_pixel(x):
+    return display_coordinates((x,0))[0] - display_coordinates((0,0))[0] 
+
+# Convert percentage in x direction to pixel
+def per_x(x):
+    return int(x*display_lim[0]/100)
+
+# Convert percentage in y direction to pixel
+def per_y(x):
+    return int(x*display_lim[1]/100)
+
+# Open Image
+im = Image.open(image_name)
+length = in_pixel(length)
+width = in_pixel(width)
+draw = ImageDraw.Draw(im)
+
+# Initialise fonts
+video_id_fontsize = per_y(video_id["fontsize"])
+video_id_font = ImageFont.truetype(video_id["font_file"], video_id_fontsize)
+
+video_title_fontsize = per_y(video_title["fontsize"])
+video_title_font = ImageFont.truetype(video_title["font_file"], video_title_fontsize)
+
+
+for m in G.nodes:
+    # Add Video ID
+    c = np.array([display_coordinates(pos[m])[0],display_lim[1] - display_coordinates(pos[m])[1]])
+    c2 = c - np.array([0, length//2 + video_id_fontsize//2])
+    draw.text(tuple(c2),m,color_palette["video_id"],font = video_id_font , anchor = video_id["alignment"])
+
+    # Distribute the title into lines
+    s = data[m]["title"]
+    s = s.split()
+    def patcher(l, n):
+        return "\n".join((" ".join(l[i:i+n]) for i in range(0, len(l), n)))
+    s = patcher(s,3)
+
+    s = s.split("\n")
+
+    # Add Video Title
+    for ind,l in enumerate(s):
+        c2 = c + np.array([0, length//2 + (2*ind+1)*video_title_fontsize//2])
+        draw.text(tuple(c2),l,color_palette["video_title"],font = video_title_font , anchor = video_title["alignment"])
+
+# Initialize title fonts
+title_fontsize = per_y(title["fontsize"])
+title_font = ImageFont.truetype(title["font_file"], title_fontsize)
+
+# Add Title
+c = np.array([per_x(title["left"]),per_y(title["top"])])
+c = np.array([c[0],display_lim[1] - c[1]])
+s = title["title"]
+s = s.split("\n")
+
+for ind,l in enumerate(s):
+    c2 = c + np.array([0, (2*ind+1)*title_fontsize//2])
+    draw.text(tuple(c2),l,color_palette["title"],font = title_font , anchor = title["alignment"])
+
+
+# Final save
+im.save(image_name)
